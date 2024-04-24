@@ -1,0 +1,27 @@
+{
+  "main": "lib/binding.js",
+  "dependencies": {
+    "node-addon-api": "8.0.0"
+  },
+  "scripts": {
+    "test": "node --napi-modules ./test/test_binding.js"
+  },
+  "gypfile": true,
+  "name": "jsbrex",
+  "description": "Node API bindings to expose BREX in JavaScript",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marron-at-work/JsBREX.git"
+  },
+  "keywords": [
+    "Regex",
+    "Bosque"
+  ],
+  "author": "Mark Marron",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/marron-at-work/JsBREX/issues"
+  },
+  "homepage": "https://github.com/marron-at-work/JsBREX#readme"
+}
