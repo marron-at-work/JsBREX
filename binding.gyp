@@ -11,7 +11,7 @@
           "<(module_root_dir)/include/brex/libbrex.a"
       ],
       'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")"],
-      'cflags_cc': [ '-std=gnu++20', '-fexceptions' ],
+      'cflags_cc': [ '-O0 -g -ggdb -fno-omit-frame-pointer -std=gnu++20', '-fexceptions' ],
       'defines': [ 'NAPI_CPP_EXCEPTIONS' ]
     }
   ]
