@@ -7,7 +7,7 @@
     "test": "node --napi-modules ./test/test_binding.js"
   },
   "gypfile": true,
-  "name": "@bosquelang/jsbrex",
+  "name": "@bosque/jsbrex",
   "description": "Node API bindings to expose BREX in JavaScript",
   "version": "0.1.0",
   "repository": {
