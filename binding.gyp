@@ -5,16 +5,14 @@
       'sources': [ 'src/jsbrex.cc' ],
       'include_dirs': [
           "<!@(node -p \"require('node-addon-api').include\")", 
-          "include/json/"
+          "<(module_root_dir)/include/json/"
       ],
-      'libraries': [ 
-          "-Linclude/brex/"
+      'libraries': [
+          "<(module_root_dir)/include/brex/libbrex.a"
       ],
       'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")"],
-      'cflags!': [ '-fno-exceptions', '-std=gnu++20' ],
-      'cflags_cc!': [ '-fno-exceptions' ],
-      'cflags_cc': [ '-std=gnu++20' ],
-      'defines': [ 'NAPI_DISABLE_CPP_EXCEPTIONS' ]
+      'cflags_cc': [ '-std=gnu++20', '-fexceptions' ],
+      'defines': [ 'NAPI_CPP_EXCEPTIONS' ]
     }
   ]
 }
