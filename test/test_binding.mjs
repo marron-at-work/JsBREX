@@ -1,5 +1,5 @@
-const {accepts, startsWith, endsWith, initializeLexer, lexFront} = require("../lib/binding.js");
-const assert = require("assert");
+import {accepts, startsWith, endsWith, initializeLexer, lexFront} from "../wrapper.mjs";
+import assert from "node:assert";
 
 assert(accepts, "The expected function is undefined");
 assert(startsWith, "The expected function is undefined");
