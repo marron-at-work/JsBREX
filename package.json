@@ -1,15 +1,23 @@
 {
-  "main": "lib/binding.js",
+  "name": "@bosque/jsbrex",
+  "description": "Node API bindings to expose BREX in JavaScript",
+  "version": "0.2.0",
+  "type": "commonjs",
+  "main": "./lib/index.js",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "import": "./wrapper.mjs",
+    "require": "./lib/index.js"
+  },
+  "types": "./dist/index.d.ts",
   "dependencies": {
     "node-addon-api": "8.0.0"
   },
   "scripts": {
-    "test": "node --napi-modules ./test/test_binding.js"
+    "build": "node-gyp rebuild && tsc -p tsconfig.json",
+    "test": "node --napi-modules ./test/test_binding.mjs"
   },
   "gypfile": true,
-  "name": "@bosque/jsbrex",
-  "description": "Node API bindings to expose BREX in JavaScript",
-  "version": "0.1.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/marron-at-work/JsBREX.git"
