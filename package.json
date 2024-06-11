@@ -5,11 +5,11 @@
   "type": "commonjs",
   "main": "./lib/index.js",
   "exports": {
-    "types": "./dist/index.d.ts",
+    "types": "./dist/wrapper.d.mts",
     "import": "./wrapper.mjs",
     "require": "./lib/index.js"
   },
-  "types": "./dist/index.d.ts",
+  "types": "./dist/wrapper.d.mts",
   "dependencies": {
     "node-addon-api": "8.0.0"
   },

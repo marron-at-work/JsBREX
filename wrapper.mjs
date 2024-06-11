@@ -39,6 +39,7 @@ export function initializeLexer(input) {
 /**
  * @param {string} pattern
  * @param {number} start
+ * @returns {string | null}
  */
 export function lexFront(pattern, start) {
     return brex.lexFront(pattern, start);
