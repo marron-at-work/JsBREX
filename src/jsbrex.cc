@@ -206,8 +206,7 @@ Napi::Value LexFront(const Napi::CallbackInfo& info) {
     return env.Null();
   }
   else {
-    auto endpos = match.value();
-    Napi::String result = Napi::String::New(env, std::string(g_lexstring.cbegin() + spos + endpos.first, g_lexstring.cbegin() + endpos.second + 1));
+    Napi::String result = Napi::String::New(env, std::string(g_lexstring.cbegin() + spos, g_lexstring.cbegin() + match.value() + 1));
 
     return result;
   }
