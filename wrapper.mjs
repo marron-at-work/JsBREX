@@ -44,3 +44,19 @@ export function initializeLexer(input) {
 export function lexFront(pattern, start) {
     return brex.lexFront(pattern, start);
 }
+
+/**
+ * @param {litstr} pattern
+ * @returns {string | null}
+ */
+export function validateStringLiteral(litstr) {
+    return brex.validateStringLiteral(litstr);
+}
+
+/**
+ * @param {litstr} pattern
+ * @returns {string | null}
+ */
+export function validateCStringLiteral(litstr) {
+    return brex.validateCStringLiteral(litstr);
+}
