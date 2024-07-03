@@ -28,4 +28,14 @@ export function initializeLexer(input: string): void;
  * @returns {string | null}
  */
 export function lexFront(pattern: string, start: number): string | null;
+/**
+ * @param {litstr} pattern
+ * @returns {string | null}
+ */
+export function validateStringLiteral(litstr: any): string | null;
+/**
+ * @param {litstr} pattern
+ * @returns {string | null}
+ */
+export function validateCStringLiteral(litstr: any): string | null;
 //# sourceMappingURL=wrapper.d.mts.map
