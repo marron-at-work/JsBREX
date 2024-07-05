@@ -2,7 +2,7 @@
   'targets': [
     {
       'target_name': 'jsbrex-native',
-      'sources': [ 'src/jsbrex.cc' ],
+      'sources': [ 'src/jsbrex.cc', 'src/reset.cc' ],
       'include_dirs': [
           "<!@(node -p \"require('node-addon-api').include\")", 
           "<(module_root_dir)/include/json/"

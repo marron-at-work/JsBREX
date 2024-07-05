@@ -4,10 +4,15 @@
 #include "../include/brex/regex/brex_parser.h"
 #include "../include/brex/regex/brex_compiler.h"
 
-using namespace Napi;
-
 static std::map<std::u8string, brex::UnicodeRegexExecutor*> g_executableRegexMap;
 static std::u8string g_lexstring;
+
+
+static std::map<std::u8string, brex::UnicodeRegexExecutor*> g_stringValidatorRegexMap;
+static std::map<std::u8string, brex::UnicodeRegexExecutor*> g_stringLiteralRegexMap;
+
+static std::map<std::u8string, brex::UnicodeRegexExecutor*> g_executableRegexMap;
+static std::map<std::u8string, brex::UnicodeRegexExecutor*> g_executableRegexMap;
 
 bool processRegex(std::u8string regex, std::string& err) {
   err.clear();
@@ -263,6 +268,66 @@ Napi::Value ValidateCStringLiteral(const Napi::CallbackInfo& info) {
 
   std::string rstr = std::string(uestr.first.value().cbegin(), uestr.first.value().cend());
   return Napi::String::From<std::string>(env, rstr);
+}
+
+static UnicodeRegexExecutor* processUnicodeRegex(std::u8string regex, std::string& err) {
+  err.clear();
+
+  auto pr = brex::RegexParser::parseUnicodeRegex(regex, true);
+  if(!pr.first.has_value() || !pr.second.empty()) {
+    err = "Parse errors in regex:\n";
+    for(auto iter = pr.second.begin(); iter != pr.second.end(); ++iter) {
+      err += "    " + std::string(iter->msg.cbegin(), iter->msg.cend()) + "\n";
+    }
+  
+    return false;
+  }
+
+  const std::map<std::string, const RegexOpt*>& namedRegexes;
+
+  std::vector<brex::RegexCompileError> compileerror;
+  auto executor = brex::RegexCompiler::compileUnicodeRegexToExecutor(pr.first.value(), {}, {}, false, nullptr, nullptr, compileerror);
+  if(!compileerror.empty()) {
+    err = "Errors compiling regex";
+
+    return false;
+  }
+
+  g_executableRegexMap[regex] = executor;
+  return true;
+}
+
+static UnicodeRegexExecutor* processCStringRegex(std::u8string regex, std::string& err) {
+  err.clear();
+
+  auto pr = brex::RegexParser::parseUnicodeRegex(regex, true);
+  if(!pr.first.has_value() || !pr.second.empty()) {
+    err = "Parse errors in regex:\n";
+    for(auto iter = pr.second.begin(); iter != pr.second.end(); ++iter) {
+      err += "    " + std::string(iter->msg.cbegin(), iter->msg.cend()) + "\n";
+    }
+  
+    return false;
+  }
+
+  std::vector<brex::RegexCompileError> compileerror;
+  auto executor = brex::RegexCompiler::compileUnicodeRegexToExecutor(pr.first.value(), {}, {}, false, nullptr, nullptr, compileerror);
+  if(!compileerror.empty()) {
+    err = "Errors compiling regex";
+
+    return false;
+  }
+
+  g_executableRegexMap[regex] = executor;
+  return true;
+}
+
+
+Napi::Value CheckRegex(const Napi::CallbackInfo& info) {
+  xxxx;
+}
+
+Napi::Value CheckRegexAsValidator(const Napi::CallbackInfo& info) {
 }
 
 
