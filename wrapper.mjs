@@ -60,3 +60,21 @@ export function validateStringLiteral(litstr) {
 export function validateCStringLiteral(litstr) {
     return brex.validateCStringLiteral(litstr);
 }
+
+/**
+ * @param {any[]} rsystem
+ * @returns {string[] | null}
+ */
+export function loadConstAndValidateRESystem(rsystem) {
+    return brex.loadConstAndValidateRESystem(rsystem);
+}
+
+/**
+ * @param {string} pattern 
+ * @param {string} input
+ * @param {boolean} isunicode 
+ * @returns {boolean}
+ */
+export function runNamedRegexAccepts(pattern, input, isunicode) {
+    return brex.runNamedRegexAccepts(pattern, input, isunicode);
+}

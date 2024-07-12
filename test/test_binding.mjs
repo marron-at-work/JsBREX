@@ -1,4 +1,4 @@
-import {accepts, startsWith, endsWith, initializeLexer, lexFront, validateStringLiteral, validateCStringLiteral} from "../wrapper.mjs";
+import {accepts, startsWith, endsWith, initializeLexer, lexFront, validateStringLiteral, validateCStringLiteral, loadConstAndValidateRESystem, runNamedRegexAccepts} from "../wrapper.mjs";
 import assert from "node:assert";
 
 assert(accepts, "The expected function is undefined");
@@ -33,5 +33,34 @@ assert(validateCStringLiteral("hello") === "hello");
 assert(validateCStringLiteral("%x59;") === "Y");
 
 assert.throws(() => validateCStringLiteral("a🌵c"));
+
+const nsinfo1 = {
+    "nsinfo": {
+        "inns": "Main",
+        "nsmappings": []
+    },
+    "reinfos": [
+        {
+            "name": "Foo",
+            "restr": '/"abc"/'
+        
+        },
+        {
+            "name": "Bar",
+            "restr": '/"xyz"/'
+        
+        },
+        {
+            "name": "Baz",
+            "restr": '/${Foo} "-" ${Bar}/'
+        }
+    ]
+};
+
+const errors1 = loadConstAndValidateRESystem([nsinfo1]);
+assert(errors1 === null);
+
+assert(runNamedRegexAccepts("Main::Foo", "abc", true));
+assert(runNamedRegexAccepts("Main::Baz", "abc-xyz", true));
 
 console.log("Tests passed- everything looks OK!");
