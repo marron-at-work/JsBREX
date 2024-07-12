@@ -212,6 +212,22 @@ Napi::Value LexFront(const Napi::CallbackInfo& info) {
   }
 }
 
+Napi::Value LoadConstAndValidateRE(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+
+  if (info.Length() != 1) {
+    Napi::TypeError::New(env, "Expected a String to validate").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  if (!info[0].IsString()) {
+    Napi::TypeError::New(env, "Expected a String to validate").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  xxxx;
+}
+
 Napi::Value ValidateStringLiteral(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
@@ -237,7 +253,6 @@ Napi::Value ValidateStringLiteral(const Napi::CallbackInfo& info) {
   std::string rstr = std::string(uestr.first.value().cbegin(), uestr.first.value().cend());
   return Napi::String::From<std::string>(env, rstr);
 }
-
 
 Napi::Value ValidateCStringLiteral(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
@@ -265,7 +280,6 @@ Napi::Value ValidateCStringLiteral(const Napi::CallbackInfo& info) {
   return Napi::String::From<std::string>(env, rstr);
 }
 
-
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set(Napi::String::New(env, "accepts"), Napi::Function::New(env, Accepts));
   exports.Set(Napi::String::New(env, "startsWith"), Napi::Function::New(env, StartsWith));
@@ -276,6 +290,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
 
   exports.Set(Napi::String::New(env, "validateStringLiteral"), Napi::Function::New(env, ValidateStringLiteral));
   exports.Set(Napi::String::New(env, "validateCStringLiteral"), Napi::Function::New(env, ValidateCStringLiteral));
+
   return exports;
 }
 
