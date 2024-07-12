@@ -1,13 +1,13 @@
 {
   "name": "@bosque/jsbrex",
   "description": "Node API bindings to expose BREX in JavaScript",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "type": "commonjs",
   "main": "./lib/index.js",
   "exports": {
     "types": "./dist/wrapper.d.mts",
     "import": "./wrapper.mjs",
-    "require": "./lib/index.js"
+    "require": "./lib/binding.js"
   },
   "types": "./dist/wrapper.d.mts",
   "dependencies": {
