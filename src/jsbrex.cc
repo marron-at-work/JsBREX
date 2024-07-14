@@ -263,8 +263,6 @@ Napi::Value LoadConstAndValidateRESystem(const Napi::CallbackInfo& info) {
       nsmappings.push_back({nsmappingarr.Get((uint32_t)0).As<Napi::String>().Utf8Value(), nsmappingarr.Get((uint32_t)1).As<Napi::String>().Utf8Value()});
     }
 
-    printf("Processing 2\n");
-
     Napi::Array reinfos = ninfoentry.Get("reinfos").As<Napi::Array>();
     size_t reinfoslen = reinfos.Length();
     std::vector<brex::REInfo> reinfovec;
