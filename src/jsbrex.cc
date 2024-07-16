@@ -191,7 +191,7 @@ Napi::Value LexFront(const Napi::CallbackInfo& info) {
   if(g_executableRegexMap.find(regex) == g_executableRegexMap.end()) {
     std::string err;
     if(!processRegex(regex, err)) {
-      Napi::TypeError::New(env, err).ThrowAsJavaScriptException();
+      Napi::Error::New(env, err).ThrowAsJavaScriptException();
       return env.Null();
     }
   }
@@ -202,7 +202,7 @@ Napi::Value LexFront(const Napi::CallbackInfo& info) {
   auto match = executor->matchFront(&g_lexstring, spos, (int64_t)g_lexstring.size() - 1, err);
 
   if(err != brex::ExecutorError::Ok) {
-    Napi::TypeError::New(env, "Invalid regex form for operation").ThrowAsJavaScriptException();
+    Napi::Error::New(env, "Invalid regex form for operation").ThrowAsJavaScriptException();
     return env.Null();
   }
 
@@ -317,10 +317,12 @@ Napi::Value RunNamedRegexAccepts(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   if (info.Length() != 3) {
+    Napi::TypeError::New(env, "Expected a regex name, string to validate, and a boolean indicating if the regex is unicode").ThrowAsJavaScriptException();
     return env.Undefined();
   }
 
   if (!info[0].IsString() || !info[1].IsString() || !info[2].IsBoolean()) {
+    Napi::TypeError::New(env, "Expected a regex name, string to validate, and a boolean indicating if the regex is unicode").ThrowAsJavaScriptException();
     return env.Undefined();
   }
 
@@ -329,6 +331,7 @@ Napi::Value RunNamedRegexAccepts(const Napi::CallbackInfo& info) {
 
   if(info[2].As<Napi::Boolean>().Value()) {
     if(g_systemUnicodeRegexMap.find(rname) == g_systemUnicodeRegexMap.end()) {
+      Napi::TypeError::New(env, "Named regex not found " + rname).ThrowAsJavaScriptException();
       return env.Undefined();
     }
 
@@ -339,6 +342,7 @@ Napi::Value RunNamedRegexAccepts(const Napi::CallbackInfo& info) {
     auto accepts = executor->test(&str, err);
 
     if(err != brex::ExecutorError::Ok) {
+      Napi::Error::New(env, "Error validating regex").ThrowAsJavaScriptException();
       return env.Undefined();
     }
 
@@ -346,6 +350,7 @@ Napi::Value RunNamedRegexAccepts(const Napi::CallbackInfo& info) {
   }
   else {
     if(g_systemCStringRegexMap.find(rname) == g_systemCStringRegexMap.end()) {
+      Napi::TypeError::New(env, "Named regex not found " + rname).ThrowAsJavaScriptException();
       return env.Undefined();
     }
 
@@ -356,6 +361,7 @@ Napi::Value RunNamedRegexAccepts(const Napi::CallbackInfo& info) {
     auto accepts = executor->test(&str, err);
 
     if(err != brex::ExecutorError::Ok) {
+      Napi::Error::New(env, "Error validating regex").ThrowAsJavaScriptException();
       return env.Undefined();
     }
 
