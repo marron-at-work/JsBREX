@@ -1,4 +1,4 @@
-import {accepts, startsWith, endsWith, initializeLexer, lexFront, validateStringLiteral, validateCStringLiteral, loadConstAndValidateRESystem, runNamedRegexAccepts} from "../wrapper.mjs";
+import {accepts, startsWith, endsWith, initializeLexer, lexFront, validateStringLiteral, validateCStringLiteral, loadConstAndValidateRESystem} from "../wrapper.mjs";
 import assert from "node:assert";
 
 assert(accepts, "The expected function is undefined");
@@ -60,7 +60,7 @@ const nsinfo1 = {
 const errors1 = loadConstAndValidateRESystem([nsinfo1]);
 assert(errors1 === null);
 
-assert(runNamedRegexAccepts("Main::Foo", "abc", true));
-assert(runNamedRegexAccepts("Main::Baz", "abc-xyz", true));
+assert(accepts("/${Main::Foo}/", "abc"));
+assert(accepts("/${Main::Baz}/", "abc-xyz"));
 
 console.log("Tests passed- everything looks OK!");
