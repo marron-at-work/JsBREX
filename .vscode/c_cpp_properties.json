@@ -3,7 +3,8 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/home/mark/.nvm/versions/node/v20.14.0/include/node/"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
