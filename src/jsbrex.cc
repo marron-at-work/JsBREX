@@ -21,14 +21,12 @@ static std::map<std::string, brex::CRegexExecutor*> g_namedExecutableCRegexMap;
 //The active lexing string for lexing operations in the compiler
 static std::u8string g_lexstring;
 
-std::string fnresolve(const std::string& name, brex::NameResolverState s) {
-    return name;
-}
+static brex::ReNSRemapper nsremapper;
 
 ///////////////////////////////////////////////////////////////////////////
 //Initialization and processing helper functions
 
-std::string processUnicodeRegex(std::u8string regex) 
+std::string processUnicodeRegex(std::string& inns, std::u8string regex) 
 {
     auto pr = brex::RegexParser::parseUnicodeRegex(regex, false);
     if(!pr.first.has_value() || !pr.second.empty()) {
@@ -36,7 +34,8 @@ std::string processUnicodeRegex(std::u8string regex)
     }
 
     std::vector<brex::RegexCompileError> compileerror;
-    auto executor = brex::RegexCompiler::compileUnicodeRegexToExecutor(pr.first.value(), g_namedUnicodeRegexMap, {}, false, nullptr, fnresolve, compileerror);
+    auto rmp = brex::ReSystemResolverInfo(inns, &nsremapper);
+    auto executor = brex::RegexCompiler::compileUnicodeRegexToExecutor(pr.first.value(), g_namedUnicodeRegexMap, {}, false, &rmp, &brex::ReSystem::resolveREName, compileerror);
     if(!compileerror.empty()) {
         return std::string(compileerror[0].msg.cbegin(), compileerror[0].msg.cend());
     }
@@ -45,7 +44,7 @@ std::string processUnicodeRegex(std::u8string regex)
     return "";
 }
 
-std::string processCRegex(std::u8string regex) 
+std::string processCRegex(std::string& inns, std::u8string regex) 
 {
     auto pr = brex::RegexParser::parseCRegex(regex, false);
     if(!pr.first.has_value() || !pr.second.empty()) {
@@ -53,7 +52,8 @@ std::string processCRegex(std::u8string regex)
     }
 
     std::vector<brex::RegexCompileError> compileerror;
-    auto executor = brex::RegexCompiler::compileCRegexToExecutor(pr.first.value(), g_namedCRegexMap, {}, false, nullptr, fnresolve, compileerror);
+    auto rmp = brex::ReSystemResolverInfo(inns, &nsremapper);
+    auto executor = brex::RegexCompiler::compileCRegexToExecutor(pr.first.value(), g_namedCRegexMap, {}, false, &rmp, &brex::ReSystem::resolveREName, compileerror);
     if(!compileerror.empty()) {
         return std::string(compileerror[0].msg.cbegin(), compileerror[0].msg.cend());
     }
@@ -67,7 +67,7 @@ bool isUnicodeRegex(std::u8string regex)
     return regex.ends_with(u8"/");
 }
 
-std::string processRegexAsNeeded(std::u8string regex)
+std::string processRegexAsNeeded(std::string& inns, std::u8string regex)
 {
     if(regex.size() < 2) {
         return "Invalid regex";
@@ -75,12 +75,12 @@ std::string processRegexAsNeeded(std::u8string regex)
 
     if(isUnicodeRegex(regex)) {
         if(g_executableUnicodeRegexMap.find(regex) == g_executableUnicodeRegexMap.end()) {
-            return processUnicodeRegex(regex);
+            return processUnicodeRegex(inns, regex);
         }
     }
     else {
         if(g_executableCRegexMap.find(regex) == g_executableCRegexMap.end()) {
-            return processCRegex(regex);
+            return processCRegex(inns, regex);
         }
     }
 
@@ -192,6 +192,8 @@ Napi::Value LoadConstAndValidateRESystem(const Napi::CallbackInfo& info)
         }
     }
 
+    nsremapper = rsystem.remapper;
+
     return env.Null();
 }
 
@@ -255,12 +257,12 @@ Napi::Value ValidateCStringLiteral(const Napi::CallbackInfo& info)
 
 std::string checkArgs(const Napi::CallbackInfo& info)
 {
-    if (info.Length() != 2) {
-        return "Expected a regex and a string as arguments";
+    if (info.Length() != 3) {
+        return "Expected regex and a string as arguments + current namespace";
     }
 
-    if (!info[0].IsString() || !info[1].IsString()) {
-        return "Expected both arguments as strings";
+    if (!info[0].IsString() || !info[1].IsString() || !info[2].IsString()) {
+        return "Expected all arguments as strings";
     }
 
     return "";
@@ -279,7 +281,8 @@ Napi::Value Accepts(const Napi::CallbackInfo& info)
     std::string uregex = info[0].As<Napi::String>().Utf8Value();
     std::u8string regex(uregex.cbegin(), uregex.cend());
 
-    std::string rrok = processRegexAsNeeded(regex);
+    auto inns = info[2].As<Napi::String>().Utf8Value();
+    std::string rrok = processRegexAsNeeded(inns, regex);
     if(rrok != "") {
         Napi::Error::New(env, rrok).ThrowAsJavaScriptException();
         return env.Undefined();
@@ -318,7 +321,8 @@ Napi::Value StartsWith(const Napi::CallbackInfo& info)
     std::string uregex = info[0].As<Napi::String>().Utf8Value();
     std::u8string regex(uregex.cbegin(), uregex.cend());
 
-    std::string rrok = processRegexAsNeeded(regex);
+    auto inns = info[2].As<Napi::String>().Utf8Value();
+    std::string rrok = processRegexAsNeeded(inns, regex);
     if(rrok != "") {
         Napi::Error::New(env, rrok).ThrowAsJavaScriptException();
         return env.Undefined();
@@ -357,7 +361,8 @@ Napi::Value EndsWith(const Napi::CallbackInfo& info)
     std::string uregex = info[0].As<Napi::String>().Utf8Value();
     std::u8string regex(uregex.cbegin(), uregex.cend());
 
-    std::string rrok = processRegexAsNeeded(regex);
+    auto inns = info[2].As<Napi::String>().Utf8Value();
+    std::string rrok = processRegexAsNeeded(inns, regex);
     if(rrok != "") {
         Napi::Error::New(env, rrok).ThrowAsJavaScriptException();
         return env.Undefined();
@@ -405,6 +410,61 @@ Napi::Value InitializeLexer(const Napi::CallbackInfo& info)
     return env.Null();
 }
 
+Napi::Value LexAccepts(const Napi::CallbackInfo& info)
+{
+    Napi::Env env = info.Env();
+
+    if(info.Length() != 2) {
+        Napi::TypeError::New(env, "Expected a regex to match on and position to start from").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    if(!info[0].IsString()) {
+        Napi::TypeError::New(env, "Expected a regex to match on").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    if(!info[1].IsString()) {
+        Napi::TypeError::New(env, "Expected string to match").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    std::string uregex = info[0].As<Napi::String>().Utf8Value();
+    std::u8string regex(uregex.cbegin(), uregex.cend());
+
+    if(g_executableUnicodeRegexMap.find(regex) == g_executableUnicodeRegexMap.end()) {
+        auto pr = brex::RegexParser::parseUnicodeRegex(regex, false);
+        if(!pr.first.has_value() || !pr.second.empty()) {
+            Napi::Error::New(env, !pr.second.empty() ? std::string(pr.second[0].msg.cbegin(), pr.second[0].msg.cend()) : "Invalid Regex").ThrowAsJavaScriptException();
+            return env.Null();
+        }
+
+        std::vector<brex::RegexCompileError> compileerror;
+        auto executor = brex::RegexCompiler::compileUnicodeRegexToExecutor(pr.first.value(), g_namedUnicodeRegexMap, {}, false, nullptr, nullptr, compileerror);
+        if(!compileerror.empty()) {
+            Napi::Error::New(env, std::string(compileerror[0].msg.cbegin(), compileerror[0].msg.cend())).ThrowAsJavaScriptException();
+            return env.Null();
+        }
+
+        g_executableUnicodeRegexMap[regex] = executor;
+    }
+
+    auto executor = g_executableUnicodeRegexMap[regex];
+
+    std::string ustr = info[1].As<Napi::String>().Utf8Value();
+     std::u8string str(ustr.cbegin(), ustr.cend());
+
+    brex::ExecutorError err;
+    auto accepts = executor->test(&str, err);
+
+    if(err != brex::ExecutorError::Ok) {
+        Napi::Error::New(env, "Invalid regex form for operation").ThrowAsJavaScriptException();
+        return env.Null();
+    }
+
+    return Napi::Boolean::From<bool>(env, accepts);
+} 
+
 Napi::Value LexFront(const Napi::CallbackInfo& info) 
 {
     Napi::Env env = info.Env();
@@ -427,15 +487,25 @@ Napi::Value LexFront(const Napi::CallbackInfo& info)
     std::string uregex = info[0].As<Napi::String>().Utf8Value();
     std::u8string regex(uregex.cbegin(), uregex.cend());
 
-    int64_t spos = info[1].As<Napi::Number>().Int32Value();
+    if(g_executableUnicodeRegexMap.find(regex) == g_executableUnicodeRegexMap.end()) {
+        auto pr = brex::RegexParser::parseUnicodeRegex(regex, false);
+        if(!pr.first.has_value() || !pr.second.empty()) {
+            Napi::Error::New(env, !pr.second.empty() ? std::string(pr.second[0].msg.cbegin(), pr.second[0].msg.cend()) : "Invalid Regex").ThrowAsJavaScriptException();
+            return env.Null();
+        }
 
-    std::string perr = processRegexAsNeeded(regex);
-    if(perr != "") {
-        Napi::Error::New(env, perr).ThrowAsJavaScriptException();
-        return env.Null();
+        std::vector<brex::RegexCompileError> compileerror;
+        auto executor = brex::RegexCompiler::compileUnicodeRegexToExecutor(pr.first.value(), g_namedUnicodeRegexMap, {}, false, nullptr, nullptr, compileerror);
+        if(!compileerror.empty()) {
+            Napi::Error::New(env, std::string(compileerror[0].msg.cbegin(), compileerror[0].msg.cend())).ThrowAsJavaScriptException();
+            return env.Null();
+        }
+
+        g_executableUnicodeRegexMap[regex] = executor;
     }
 
     auto executor = g_executableUnicodeRegexMap[regex];
+    int64_t spos = info[1].As<Napi::Number>().Int32Value();
 
     brex::ExecutorError err;
     auto match = executor->matchFront(&g_lexstring, spos, (int64_t)g_lexstring.size() - 1, err);
@@ -466,6 +536,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     exports.Set(Napi::String::New(env, "endsWith"), Napi::Function::New(env, EndsWith));
 
     exports.Set(Napi::String::New(env, "initializeLexer"), Napi::Function::New(env, InitializeLexer));
+    exports.Set(Napi::String::New(env, "lexAccepts"), Napi::Function::New(env, LexFront));
     exports.Set(Napi::String::New(env, "lexFront"), Napi::Function::New(env, LexFront));
 
     return exports;

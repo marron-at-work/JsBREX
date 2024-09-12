@@ -20,30 +20,40 @@ export function validateCStringLiteral(litstr: string): string;
  *
  * @param {string} pattern
  * @param {string} input
+ * @param {string} inns
  * @returns {boolean}
  * @throws {TypeError}
  */
-export function accepts(pattern: string, input: string): boolean;
+export function accepts(pattern: string, input: string, inns: string): boolean;
 /**
  * @param {string} pattern
  * @param {string} input
+ * @param {string} inns
  * @returns {boolean}
  * @throws {TypeError}
  */
-export function startsWith(pattern: string, input: string): boolean;
+export function startsWith(pattern: string, input: string, inns: string): boolean;
 /**
  * @param {string} pattern
  * @param {string} input
+ * @param {string} inns
  * @returns {boolean}
  * @throws {TypeError}
  */
-export function endsWith(pattern: string, input: string): boolean;
+export function endsWith(pattern: string, input: string, inns: string): boolean;
 /**
  * @param {string} input
  * @returns {void}
  * @throws {TypeError}
  */
 export function initializeLexer(input: string): void;
+/**
+ * @param {string} pattern
+ * @param {string} input
+ * @returns {boolean}
+ * @throws {TypeError}
+ */
+export function lexAccepts(pattern: string, input: string): boolean;
 /**
  * @param {string} pattern
  * @param {number} start
