@@ -35,5 +35,7 @@
 /node_modules
 /build
 
+/.vscode
+
 # allow bin lib
 !include/brex/libbrex.a
