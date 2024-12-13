@@ -13,6 +13,9 @@
   "dependencies": {
     "node-addon-api": "8.0.0"
   },
+  "devDependencies": {
+    "typescript": "5.6.2"
+  },
   "scripts": {
     "build": "node-gyp rebuild && tsc -p tsconfig.json",
     "test": "node --napi-modules ./test/test_binding.mjs"
