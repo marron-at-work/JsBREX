@@ -17,6 +17,18 @@ export function validateStringLiteral(litstr: string): string;
  */
 export function validateCStringLiteral(litstr: string): string;
 /**
+ * @param {string} litstr
+ * @returns {string}
+ * @throws {TypeError}
+ */
+export function escapeStringLiteral(litstr: string): string;
+/**
+ * @param {string} litstr
+ * @returns {string}
+ * @throws {TypeError}
+ */
+export function escapeCStringLiteral(litstr: string): string;
+/**
  *
  * @param {string} pattern
  * @param {string} input
@@ -41,24 +53,4 @@ export function startsWith(pattern: string, input: string, inns: string): boolea
  * @throws {TypeError}
  */
 export function endsWith(pattern: string, input: string, inns: string): boolean;
-/**
- * @param {string} input
- * @returns {void}
- * @throws {TypeError}
- */
-export function initializeLexer(input: string): void;
-/**
- * @param {string} pattern
- * @param {string} input
- * @returns {boolean}
- * @throws {TypeError}
- */
-export function lexAccepts(pattern: string, input: string): boolean;
-/**
- * @param {string} pattern
- * @param {number} start
- * @returns {string | null}
- * @throws {TypeError}
- */
-export function lexFront(pattern: string, start: number): string | null;
 //# sourceMappingURL=wrapper.d.mts.map

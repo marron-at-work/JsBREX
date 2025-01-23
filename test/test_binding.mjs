@@ -1,4 +1,4 @@
-import {accepts, startsWith, endsWith, initializeLexer, lexFront, validateStringLiteral, validateCStringLiteral, loadConstAndValidateRESystem} from "../wrapper.mjs";
+import {accepts, startsWith, endsWith, validateStringLiteral, validateCStringLiteral, loadConstAndValidateRESystem, escapeStringLiteral, escapeCStringLiteral} from "../wrapper.mjs";
 import assert from "node:assert";
 
 assert(accepts, "The expected function is undefined");
@@ -7,21 +7,6 @@ assert(endsWith, "The expected function is undefined");
 
 assert(accepts('/"hello"/', "hello", "Main"));
 assert(!accepts('/"hello"/', "nope", "Main"));
-
-assert(initializeLexer, "The expected function is undefined");
-assert(lexFront, "The expected function is undefined");
-
-initializeLexer("hello world");
-assert(lexFront('/"hello"/', 0) === "hello");
-assert(lexFront('/"hello"/', 3) === null);
-assert(lexFront('/"orld"/', 7) === "orld");
-assert(lexFront('/"orld!"/', 7) === null);
-
-
-initializeLexer("hello 42n world");
-assert(lexFront('/[0-9]+"n"/', 6) === "42n");
-assert(lexFront('/[0-9]+"n"/', 7) === "2n");
-assert(lexFront('/[0-9]+"n"/', 8) === null);
 
 assert(validateStringLiteral, "The expected function is undefined");
 assert(validateStringLiteral("hello") === "hello");
@@ -33,6 +18,15 @@ assert(validateCStringLiteral("hello") === "hello");
 assert(validateCStringLiteral("%x59;") === "Y");
 
 assert.throws(() => validateCStringLiteral("a🌵c"));
+
+assert(escapeStringLiteral("abc") === "abc");
+assert(escapeStringLiteral(validateStringLiteral("%%;")) === "%%;");
+assert(escapeStringLiteral(validateStringLiteral("%percent;")) === "%%;");
+
+assert(escapeCStringLiteral("abc") === "abc");
+assert(escapeCStringLiteral(validateCStringLiteral("%;")) === "%;");
+assert(escapeCStringLiteral(validateCStringLiteral("%tick;")) === "%;");
+
 
 const nsinfo1 = {
     "nsinfo": {
