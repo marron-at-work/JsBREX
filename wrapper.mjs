@@ -28,6 +28,24 @@ export function validateCStringLiteral(litstr) {
 }
 
 /**
+ * @param {string} litstr
+ * @returns {string}
+ * @throws {TypeError}
+ */
+export function escapeStringLiteral(litstr) {
+    return brex.escapeStringLiteral(litstr);
+}
+
+/**
+ * @param {string} litstr
+ * @returns {string}
+ * @throws {TypeError}
+ */
+export function escapeCStringLiteral(litstr) {
+    return brex.escapeCStringLiteral(litstr);
+}
+
+/**
  * 
  * @param {string} pattern 
  * @param {string} input 
@@ -59,34 +77,5 @@ export function startsWith(pattern, input, inns) {
  */
 export function endsWith(pattern, input, inns) {
     return brex.endsWith(pattern, input, inns);
-}
-
-/**
- * @param {string} input
- * @returns {void}
- * @throws {TypeError}
- */
-export function initializeLexer(input) {
-    brex.initializeLexer(input);
-}
-
-/**
- * @param {string} pattern
- * @param {string} input
- * @returns {boolean}
- * @throws {TypeError}
- */
-export function lexAccepts(pattern, input) {
-    return brex.lexFront(pattern, start);
-}
-
-/**
- * @param {string} pattern
- * @param {number} start
- * @returns {string | null}
- * @throws {TypeError}
- */
-export function lexFront(pattern, start) {
-    return brex.lexFront(pattern, start);
 }
 
