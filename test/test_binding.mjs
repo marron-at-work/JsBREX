@@ -1,4 +1,4 @@
-import {accepts, startsWith, endsWith, validateStringLiteral, validateCStringLiteral, loadConstAndValidateRESystem, escapeStringLiteral, escapeCStringLiteral, getBSQIRForm, getSMTForm} from "../wrapper.mjs";
+import {accepts, startsWith, endsWith, validateStringLiteral, validateCStringLiteral, loadConstAndValidateRESystem, escapeStringLiteral, escapeCStringLiteral, getBSQIRForm, getSMTForm, getCPPForm} from "../wrapper.mjs";
 import assert from "node:assert";
 
 assert(accepts, "The expected function is undefined");
@@ -61,8 +61,10 @@ assert(accepts("/${Foo}/", "abc", "Main"));
 
 assert(getBSQIRForm("/${Foo}/", "Main") === '/"abc"/');
 assert(getSMTForm("/${Foo}/", "Main") === '(str.to.re "abc")');
+assert(getCPPForm("/${Foo}/", "Main") === 'abc');
 
 assert(getBSQIRForm("/'yep'+/c", "Main") === "/'yep'+/c");
 assert(getSMTForm("/'yep'+/c", "Main") === '(re.+ (str.to.re "yep"))');
+assert(getCPPForm("/'yep'+/c", "Main") === '(yep)+');
 
 console.log("Tests passed- everything looks OK!");
