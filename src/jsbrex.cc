@@ -506,6 +506,38 @@ Napi::Value GetSMTForm(const Napi::CallbackInfo& info)
     return Napi::String::From<std::string>(env, rebsqir);
 }
 
+
+Napi::Value GetCPPForm(const Napi::CallbackInfo& info) 
+{
+     Napi::Env env = info.Env();
+
+    std::string aok = checkInfoArgs(info);
+    if(aok != "") {
+        Napi::TypeError::New(env, aok).ThrowAsJavaScriptException();
+        return env.Undefined();
+    }
+
+    std::string uregex = info[0].As<Napi::String>().Utf8Value();
+    std::u8string regex(uregex.cbegin(), uregex.cend());
+
+    auto inns = info[1].As<Napi::String>().Utf8Value();
+    std::string rrok = processRegexAsNeeded(inns, regex);
+    if(rrok != "") {
+        Napi::Error::New(env, rrok).ThrowAsJavaScriptException();
+        return env.Undefined();
+    }
+
+    std::string recppir;
+    if(!isUnicodeRegex(regex)) {
+        recppir = g_executableCRegexMap[regex]->getCPPIRInfo().second;        
+    }
+    else {
+        recppir = g_executableUnicodeRegexMap[regex]->getCPPIRInfo().second;
+    }
+    
+    return Napi::String::From<std::string>(env, recppir);
+}
+
 ///////////////////////////////////////////////////////////////////////////
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) 
@@ -524,6 +556,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
 
     exports.Set(Napi::String::New(env, "getBSQIRForm"), Napi::Function::New(env, GetBSQIRForm));
     exports.Set(Napi::String::New(env, "getSMTForm"), Napi::Function::New(env, GetSMTForm));
+    exports.Set(Napi::String::New(env, "getCPPForm"), Napi::Function::New(env, GetCPPForm));
 
     return exports;
 }

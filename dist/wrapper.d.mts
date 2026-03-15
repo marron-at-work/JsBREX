@@ -67,4 +67,11 @@ export function getBSQIRForm(pattern: string, inns: string): string;
  * @throws {TypeError}
  */
 export function getSMTForm(pattern: string, inns: string): string;
+/**
+ * @param {string} pattern
+ * @param {string} inns
+ * @returns {string}
+ * @throws {TypeError}
+ */
+export function getCPPForm(pattern: string, inns: string): string;
 //# sourceMappingURL=wrapper.d.mts.map

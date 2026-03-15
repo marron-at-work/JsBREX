@@ -99,3 +99,13 @@ export function getSMTForm(pattern, inns) {
     return brex.getSMTForm(pattern, inns);
 }
 
+/**
+ * @param {string} pattern
+ * @param {string} inns 
+ * @returns {string}
+ * @throws {TypeError}
+ */
+export function getCPPForm(pattern, inns) {
+    return brex.getCPPForm(pattern, inns);
+}
+
